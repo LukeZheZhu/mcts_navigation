@@ -7,10 +7,8 @@
 
 namespace mcts {
     class CMap {
-    private:
-        std::vector<std::vector<CGrid*> > m_map =
-            std::vector<std::vector<CGrid*> > (MAP_HEIGHT,
-                                               std::vector<CGrid*>(MAP_WIDTH));
+    public:
+        std::vector<std::vector<CGrid*>> m_map;
 
         struct SCoordinate m_start;
         struct SCoordinate m_terminal;
@@ -23,24 +21,26 @@ namespace mcts {
         struct SCoordinate getStart();
         struct SCoordinate getTerminal();
 
-        bool isLegel(int x, int y);
+        bool isLegal(int x, int y);
         bool isEnd();
     };
 
     class CMcts {
+    public:
         int m_index;
         std::vector<struct SCoordinate> m_move =
             std::vector<struct SCoordinate>(8);
 
+    public:
         CMcts();
         CMcts(CNode* node);
 
-        CNode* treePolicy(CNode* &node);
-        int defaultPolicy(CNode* node);
+        CNode* treePolicy(CNode* &node, CMap* &map);
+        float defaultPolicy(CNode* &node, CMap* &map);
 
-        CNode* nodeExpand(CNode* &node);
-        CNode* bestChild();
-        void backUp(CNode* node, float reward);
+        CNode* nodeExpand(CNode* &node, CMap* &map, int &index);
+        CNode* bestChild(CNode* node);
+        void backUp(CNode* &node, float reward);
     };
 } //namespace mcts
 

@@ -4,13 +4,13 @@
 #include <iostream>
 #include <vector>
 
-#define MAP_HEIGHT 301
-#define MAP_WIDTH  301
+#define MAP_HEIGHT 5
+#define MAP_WIDTH  5
 
 #define START_X 1
 #define START_Y 1
-#define TERMINAL_X 30
-#define TERMINAL_Y 30
+#define TERMINAL_X 3
+#define TERMINAL_Y 3
 
 #define MCTS_BUDGET 1000
 #define ROLLOUT_BUDGET 500
@@ -89,21 +89,24 @@ namespace mcts {
 
 
     class CNode {
+    public:
         struct SCoordinate m_position;
         float m_rewarded;
         int m_visited;
         int m_status;
-        int m_count;
+        std::vector<bool> m_count;
 
         CNode* m_parent;
         CNode* m_child;
         std::vector<CNode*> m_children;
 
-        CNode() {
+        CNode() :
+            m_count(8, false)
+        {
             m_rewarded = 0.0;
             m_visited = 0;
             m_status = 0;
-            m_count = 0;
+
             m_parent = NULL;
             m_child = NULL;
         }
@@ -131,11 +134,12 @@ namespace mcts {
         }
 
         bool isAllExpanded() {
-            if(m_count == 8) {
-                return true;
-            } else {
-                return false;
+            for(int i = 0; i < m_count.size(); ++i) {
+                if(m_count[i] == false) {
+                    return false;
+                }
             }
+            return true;
         }
 
         bool isTerminal() {
