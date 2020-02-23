@@ -4,91 +4,28 @@
 #include <iostream>
 #include <vector>
 
-#define MAP_HEIGHT 5
-#define MAP_WIDTH  5
-
-#define START_X 1
-#define START_Y 1
-#define TERMINAL_X 3
-#define TERMINAL_Y 3
-
 #define MCTS_BUDGET 1000
 #define ROLLOUT_BUDGET 500
 
-namespace mcts {
-    struct SCoordinate {
-        int x;
-        int y;
+namespace nsMctss {
+    struct sCoordinate {
+        float x;
+        float y;
 
-        SCoordinate() {
-            x = 0;
-            y = 0;
+        sCoordinate() :
+            x(0),
+            y(0) {
+        };
+
+        sCoordinate(float coordX, float coordY) :
+            x(coordX),
+            y(coordY) {
         };
     };
 
-    enum EProperty {
-        AVAILABLE,
-        OBSTACLE,
-        HOTZONE,
-        START,
-        TERMINAL,
-        ARRIVED
-    };
-
-    class CGrid {
-    private:
-        struct SCoordinate m_position;
-        float m_rewarded;
-        int m_visited;
-        enum EProperty m_property;
-
-    public:
-        CGrid() {
-            m_rewarded = 0.0;
-            m_visited = 0;
-            m_property = AVAILABLE;
-        }
-
-        bool setGridLocation(int x, int y) {
-            m_position.x = x;
-            m_position.y = y;
-            return true;
-        }
-
-        bool setGridRewarded(float rewarded = 0.0) {
-            m_rewarded = rewarded;
-            return true;
-        }
-
-        bool setGridVisited(int visited = 0) {
-            m_visited = visited;
-            return true;
-        }
-
-        bool setGridProperty(EProperty property = AVAILABLE) {
-            m_property = property;
-            return true;
-        }
-
-        struct SCoordinate getGridLocation() {
-            return m_position;
-        }
-
-        float getGridRewarded() {
-            return m_rewarded;
-        }
-
-        int getGridVisited() {
-            return m_visited;
-        }
-
-        EProperty getGridProperty() {
-            return m_property;
-        }
-    };
 
 
-    class CNode {
+    class cNode {
     public:
         struct SCoordinate m_position;
         float m_rewarded;
@@ -96,28 +33,28 @@ namespace mcts {
         int m_status;
         std::vector<bool> m_count;
 
-        CNode* m_parent;
-        CNode* m_child;
-        std::vector<CNode*> m_children;
+        std::shared_ptr<cNode> m_parent;
+        std::shared_ptr<cNode> m_child;
+        std::vector<std::shared_ptr<cNode>> m_children;
 
-        CNode() :
-            m_count(8, false)
-        {
-            m_rewarded = 0.0;
-            m_visited = 0;
-            m_status = 0;
+        cNode() :
+            m_position(),
+            m_rewarded(0.0),
+            m_visited(0),
+            m_status(0),
+            m_count(8, false),
+            m_parent(std::make_shared<cNode>()),
+            m_child(std::make_shared<cNode>()),
+            m_children(8, std::make_shared<cNode>()) {
+        };
 
-            m_parent = NULL;
-            m_child = NULL;
-        }
-
-        bool setPosition(int x, int y) {
+        bool setPosition(float x, float y) {
             m_position.x = x;
             m_position.y = y;
             return true;
         }
 
-        bool setParent(CNode* parent) {
+        bool setParent(std::shared_ptr<cNode> parent) {
             if(parent) {
                 m_parent = parent;
                 return true;
@@ -152,6 +89,7 @@ namespace mcts {
         }
 
     };
-} //namespace mcts
+
+} //namespace nsMcts
 
 #endif //MCTS_DEFS_HPP

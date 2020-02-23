@@ -4,9 +4,36 @@
 #include <mcts.hpp>
 
 #include <model.hpp>
-
+#include <map.hpp>
 
 int main() {
+    nsMap::cMap map = nsMap::cMap(START_X, START_Y, TERMINAL_X, TERMINAL_Y);
+    nsModel::cModel car = nsModel::cModel(std::make_share
+                                          <nsModel::cModelCar>());
+
+    std::shared_ptr<nsMcts::cNode> root = std::make_share<nsMcts::cNode>(map);
+    std::shared_ptr<nsMcts::cMcts> mcts = std::make_share<nsMcts::cMcts>();
+    std::shared_ptr<nsMcts::cNode> node = root;
+    root->setPose(START_X, START_Y);
+
+#if 0
+    int budget = MCTS_BUDGET;
+
+    while(!(node->isTerminal()) && (budget != 0)) {
+#else
+    while(!(node->isTerminal())) {
+        std::shared_ptr<nsMcts::cNode> tmpNode(root);
+        tmpNode = mcts->treePolicy();
+        if(tmpNode) {
+            float reward = mcts->defaultPolicy(tmpNode, map);
+    }
+#endif
+
+
+
+
+
+
     mcts::CMap* map = new mcts::CMap();
     map->setStart(START_X, START_Y);
     map->setTerminal(TERMINAL_X, TERMINAL_Y);

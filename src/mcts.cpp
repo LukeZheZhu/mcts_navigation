@@ -63,7 +63,7 @@ namespace mcts {
     }
 
 
-    CMcts::CMcts() : m_index(0) {
+    cMcts::CMcts() : m_index(0) {
         m_move[0].x = -1; m_move[0].y =  0;
         m_move[1].x = -1; m_move[1].y =  1;
         m_move[2].x =  0; m_move[2].y =  1;
@@ -74,15 +74,18 @@ namespace mcts {
         m_move[7].x = -1; m_move[7].y = -1;
     }
 
-    CMcts::CMcts(CNode* node) {
+    cMcts::CMcts(CNode* node) {
     }
 
-    CNode* CMcts::nodeExpand(CNode* &node, CMap* &map, int &index) {
-        int x = 0;
-        int y = 0;
+    std::shared_ptr<cNode> cMcts::nodeExpand(std::shared_ptr<cNode> &node,
+                                             nsModel::cModel model,
+                                             cMap* &map, int &index) {
+        float x = 0.0;
+        float y = 0.0;
+        float radius = model.getRaduis();
 
         while(!(node->isAllExpanded())) {
-            index = index % 8;
+            index = index % DIRECTION_NUM;
             node->m_count[index] = true;
             x = node->m_position.x + m_move[index].x;
             y = node->m_position.y + m_move[index].y;
@@ -113,12 +116,13 @@ namespace mcts {
 
     }
 
-    CNode* CMcts::treePolicy(CNode* &node, CMap* &map) {
-        int tempX = node->m_position.x - TERMINAL_X;
-        int tempY = node->m_position.y - TERMINAL_Y;
-        if((-1 <= tempX) && (tempX <=1) && (-1 <= tempY) && (tempY <= 1)) {
-            CNode* final = new CNode();
-            final->setPosition(TERMINAL_X, TERMINAL_Y);
+    std::shared_ptr<cNode> cMcts::treePolicy(std::shared_ptr<cNode> &node,
+                                             cMap* &map) {
+        float tmpX = node->m_pos.position.x - float(TERMINAL_X);
+        float tmpY = node->m_pos.position.y - float(TERMINAL_Y);
+        if((std::abs(tmpX) <= 1.0) && (std::abs(tmpY) <= 1.0)) {
+            std::shared_ptr<cNode> final = std::make_shared<cNode>();
+            final->setPose(float(TERMINAL_X), float(TERMINAL_Y));
             final->setParent(node);
             node->addChild(final);
             node = final;
@@ -130,15 +134,15 @@ namespace mcts {
                 node = bestChild(node);
             } else {
                 m_index = m_index % 8;
-                CNode* tempNode = nodeExpand(node, map, m_index);
+                cNode* tmpNode = nodeExpand(node, map, m_index);
                 ++m_index;
-                return tempNode;
+                return tmpNode;
             }
         }
         return NULL;
     }
 
-    float CMcts::defaultPolicy(CNode* &node, CMap* &map) {
+    float cMcts::defaultPolicy(CNode* &node, CMap* &map) {
         float reward = 0.0;
         CNode* tempNode = new CNode();
         *tempNode = *node;
@@ -170,7 +174,7 @@ namespace mcts {
         return 0.0;
     }
 
-    void CMcts::backUp(CNode* &node, float reward) {
+    void cMcts::backUp(CNode* &node, float reward) {
         while(node != NULL) {
             ++(node->m_visited);
             node->m_rewarded += reward;
@@ -178,7 +182,7 @@ namespace mcts {
         }
     }
 
-    CNode* CMcts::bestChild(CNode* node) {
+    CNode* cMcts::bestChild(CNode* node) {
         float best = 0.0;
         float cp = 1.414;
         CNode* tempNode = NULL;
