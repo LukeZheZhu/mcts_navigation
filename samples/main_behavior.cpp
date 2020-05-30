@@ -13,8 +13,8 @@ int main() {
 
     std::shared_ptr<nsMcts::cNode> root = std::make_share<nsMcts::cNode>(map);
     std::shared_ptr<nsMcts::cMcts> mcts = std::make_share<nsMcts::cMcts>();
-    std::shared_ptr<nsMcts::cNode> node = root;
-    root->setPose(START_X, START_Y);
+    std::shared_ptr<nsMcts::cNode> node(root);
+    root->setPose(START_X, START_Y, 0);
 
 #if 0
     int budget = MCTS_BUDGET;
@@ -22,8 +22,8 @@ int main() {
     while(!(node->isTerminal()) && (budget != 0)) {
 #else
     while(!(node->isTerminal())) {
-        std::shared_ptr<nsMcts::cNode> tmpNode(root);
-        tmpNode = mcts->treePolicy();
+        std::shared_ptr<nsMcts::cNode> tmpNode(node);
+        node = mcts->treePolicy(node, car, map);
         if(tmpNode) {
             float reward = mcts->defaultPolicy(tmpNode, map);
     }

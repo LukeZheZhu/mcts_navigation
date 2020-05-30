@@ -17,19 +17,44 @@ namespace nsMcts {
 
     std::shared_ptr<cNode> cMcts::nodeExpand(std::shared_ptr<cNdoe> node,
                                              nsModel::cModel &model,
-                                             nsMap::cMap &map,
-                                             int &index) {
+                                             nsMap::cMap &map, int &index) {
         float x = 0.0;
         float y = 0.0;
         float yaw = 0.0;
 
+#if 1
+        for(int i = index; i < node->m_childStatus.size(); ++i) {
+            if(node->m_childStatus[i].isVisited)
+                continue;
+
+            struct nsModel::modelPose tmpMove = model.calcMove(index);
+            x = node->pose.position.x + tmpMove.position.x;
+            y = node->pose.position.y + tmpMove.position.y;
+            yaw = (node->pose.rotation.yaw + tmpMove.rotation.yaw) % 360;
+            node->m_childStatus[i].isVisited = true;
+
+            float tmpRadius = model.getRadius();
+            if(map->isLegal(x, y, tmpRadius)) {
+                std::shared_ptr<cNode> subNode = std::make_shared<cNode>();
+                subNode->setPose(x, y, yaw);
+                subNode->setParent(node);
+                node->addChild(subNode);
+                node->m_childStatus[i].isCreated = true;
+
+                return subNode;
+            } else {
+                continue;
+            }
+        }
+
+#else
         while(!(node->isAllExpanded())) {
             index = index % DIRECTION_NUM;
             struct nsModel::modelPose tmpMove = model.calcMove(index);
             x = node->pose.position.x + tmpMove.position.x;
             y = node->pose.position.y + tmpMove.position.y;
             yaw = node->pose.rotation.yaw + tmpMove.rotation.yaw;
-            node->m_status[index] = true;
+            node->m_isVisited[index] = true;
 
             //        std::cout << "xx: " << x << ", yy: " << y << std::endl;
 
@@ -47,6 +72,7 @@ namespace nsMcts {
                 subNode->setPose(x, y, yaw);
                 subNode->setParent(node);
                 node->addChild(subNode);
+                subNode->isCreated = false;
 
                 return subNode;
 
@@ -55,10 +81,12 @@ namespace nsMcts {
                 continue;
             }
         }
-
+#endif
         return nullptr;
 
     }
+
+
 
     std::shared_ptr<cNode> cMcts::treePolicy(std::shared_ptr<cNode> &node,
                                              nsModel::cModel &model,
@@ -72,19 +100,16 @@ namespace nsMcts {
                            node.rotation.yaw);
             final->setParent(node);
             node->addChild(final);
-            node = final;
+
+            return final;
         }
 
         while(!(node->isTerminal())) {
-            if(node->isAllExpanded()) {
-                m_index = 0;
+            if(node->isAllExpanded() && node->isAllSimulated) {
                 node = bestChild(node);
             } else {
-                m_index = m_index % DIRECTION_NUM;
-                std::shared_ptr<cNode> tmpNode = nodeExpand(node, model,
-                                                            m_index);
+                std::shared_ptr<cNode> tmpNode = nodeExpand(node, model, map);
                 if(tmpNode) {
-                    ++m_index;
                     return tmpNode;
                 } else {
                     return nullptr;
@@ -98,7 +123,10 @@ namespace nsMcts {
     float cMcts::defaultPolicy(std::shared_ptr<cNode> &node,
                                nsModel::cModel &model,
                                std::shared_ptr<nsMap::cMap> &map) {
-        std::shared_ptr<cNode> tmpNode(new cNode(*node));
+
+        std::shared_ptr<cNode> simNode(new cNode(*node));
+        std::shared_ptr<cNode> tmpNode(simNode);
+        int interAddr = *simNode;
 
         int cout = 0;
         float reward = 0.0;
@@ -106,14 +134,14 @@ namespace nsMcts {
         while(true) {
             ++count;
             int tmpIndex = std::rand() % DIRECTION_NUM;
-            tmpNode = nodeExpand(tmpNode, model, map);
+            tmpNode = nodeExpand(tmpNode, model, map, tmpIndex);
 
             float tmpX = tmpNode->m_pose.position.x - float(TERMINAL_X);
             float tmpY = tmpNode->m_pose.position.y - float(TERMINAL_Y);
             if((std::abs(tempX) <= 1.0) && (std::abs(tempY) <= 1.0)) {
                 std::shared_ptr<cNode> final = std::make_shared<cNode>();
                 final->setPose(float(TERMINAL_X), float(TERMINAL_Y),
-                               tmpNode.);
+                               tmpNode.rotation.yaw);
                 final->setParent(tmpNode);
                 tmpNode->addChild(final);
                 tmpNode = final;
@@ -124,36 +152,6 @@ namespace nsMcts {
         }
         return 0.0;
 
-#if 0
-        CNode* tempNode = new CNode();
-        *tempNode = *node;
-        std::srand((unsigned)std::time(NULL));
-//        for(int i = 0; i <= ROLLOUT_BUDGET; ++i) {
-        int count = 0;
-        while(1) {
-            ++count;
-            int tempIndex = std::rand() % 8;
-//            std::cout << "randomValue " << std::rand() << std::endl;
-//            std::cout << "randomIndex: " << tempIndex << std::endl;
-            tempNode = nodeExpand(tempNode, map, tempIndex);
-            int tempX = tempNode->m_position.x - TERMINAL_X;
-            int tempY = tempNode->m_position.y - TERMINAL_Y;
-            if((-1 <= tempX) && (tempX <=1) && (-1 <= tempY) && (tempY <= 1)) {
-                CNode* final = new CNode();
-                final->setPosition(TERMINAL_X, TERMINAL_Y);
-                final->setParent(tempNode);
-                tempNode->addChild(final);
-                tempNode = final;
-            }
-
-            if(tempNode->isTerminal()) {
-
-                return (1.0 / float(count));
-            }
-
-        }
-        return 0.0;
-#endif
     }
 
     void cMcts::backUp(std::shared_ptr<cNode> &node, float reward) {

@@ -26,14 +26,30 @@ namespace nsMcts {
         };
     };
 
+    struct sChildNodeStatus {
+        bool isVisited;
+        bool isCreated;
+        bool isSimulated;
 
+        sChildNodeStatus() :
+            isVisited(false),
+            isCreated(false),
+            isSimulated(false) {
+        };
+
+        sChildNodeStatus(bool visited, bool created, bool simulated) :
+            isVisited(visited),
+            isCreated(created),
+            isSimulated(simulated) {
+        }
+    };
 
     class cNode {
     public:
         struct nsModel::sModelPose m_pose;
         float m_rewarded;
         int m_visited;
-        std::vector<bool> m_status;
+        std::vector<sChildNodeStatus> m_childStatus;;
 
         std::shared_ptr<cNode> m_parent;
         std::shared_ptr<cNode> m_child;
@@ -45,10 +61,10 @@ namespace nsMcts {
             m_pose(),
             m_rewarded(0.0),
             m_visited(0),
-            m_status(DIRECTION_NUM, false),
+            m_childStatus(DIRECTION_NUM, sChildNodeStatus()),
             m_parent(std::make_shared<cNode>()),
             m_child(std::make_shared<cNode>()),
-            m_children(8, std::make_shared<cNode>()),
+            m_children()
             m_map() {
         };
 
@@ -56,7 +72,7 @@ namespace nsMcts {
             m_pose(nodde.m_pose),
             m_rewarded(node.m_rewarded),
             m_visited(node.m_visited),
-            m_status(node.m_status),
+            m_childStatus(node.m_childStatus),
             m_parent(node.m_parent),
             m_child(node.m_child),
             m_children(node.m_children),
@@ -69,7 +85,7 @@ namespace nsMcts {
             m_pose(),
             m_rewarded(0.0),
             m_visited(0),
-            m_status(DIRECTION_NUM, false),
+            m_isVisited(DIRECTION_NUM, false),
             m_parent(std::make_shared<cNode>()),
             m_child(std::make_shared<cNode>()),
             m_children(8, std::make_shared<cNode>()),
@@ -104,14 +120,27 @@ namespace nsMcts {
         };
 
         bool isAllExpanded() {
-            for(int i = 0; i < m_status.size(); ++i) {
-                if(m_status[i] == false) {
+            for(int i = 0; i < m_childStatus.size(); ++i) {
+                if(m_childStatus[i].isVisited == false) {
                     return false;
                 }
             }
             return true;
         };
 
+        bool isAllSimulated() {
+            for(int i = 0; i < m_childStatus.size(); ++i) {
+                if((m_childStatus[i].isVisited == true) &&
+                   (m_childStatus[i].isCreated == true)) {
+                    if(m_childStatus[i].isSimulated == false) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
         bool isTerminal() {
             if((m_pose.position.x == TERMINAL_X) &&
                (m_pose.position.y == TERMINAL_Y)) {
