@@ -1,8 +1,8 @@
 #ifndef MODEL_HPP
 #define MODEL_HPP
 
-#include <iosream>
-#include <math>
+#include <iostream>
+#include <cmath>
 
 #define MODEL_HEIGHT 0.0
 #define MODEL_SPEED  1.0
@@ -24,7 +24,7 @@ namespace nsModel {
         sModelCoordinate(sModelCoordinate &coord) :
             x(coord.x),
             y(coord.y),
-            z(corrd.z) {
+            z(coord.z) {
         };
 
         sModelCoordinate(float coordX, float coordY, float height = 0.0) :
@@ -164,7 +164,7 @@ namespace nsModel {
 
         struct sModelPose getPose() {
             return m_pose;
-        }；
+        };
 
         struct sModelPose calcMove(int index) {
             m_pose.rotation.yaw = m_turn[index];

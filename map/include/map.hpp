@@ -46,20 +46,20 @@ namespace nsMap {
         cGrid() :
             m_visited(0),
             m_grid(),
-            m_property(AVAILABEL) {
+            m_property(AVAILABLE) {
         };
 
         cGrid(int gridX, int gridY,
               eProperty property = AVAILABLE,
               int visit = 0) :
             m_visited(visit),
-            m_grid(gridX, girdY),
+            m_grid(gridX, gridY),
             m_property(property) {
         };
 
         bool setGridLocation(int x, int y) {
-            m_position.x = x;
-            m_position.y = y;
+            m_grid.x = x;
+            m_grid.y = y;
             return true;
         }
 
@@ -73,8 +73,8 @@ namespace nsMap {
             return true;
         }
 
-        struct SCoordinate getGridLocation() {
-            return m_position;
+        struct sCoordination getGridLocation() {
+            return m_grid;
         }
 
         int getGridVisited() {
@@ -99,8 +99,8 @@ namespace nsMap {
         void initMap();
         bool setMapGrid(int x, int y, eProperty property = AVAILABLE);
 
-        struct sCoordinate getStart();
-        struct sCoordinate getTerminal();
+        struct sCoordination getStart();
+        struct sCoordination getTerminal();
 
         bool isLegal(int x, int y);
         bool isLegal(float x, float y, float radius);

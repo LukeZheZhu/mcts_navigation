@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 #include "map.hpp"
 
@@ -31,7 +32,7 @@ namespace nsMap {
                 m_map[i][j].setGridProperty(eProperty::AVAILABLE);
             }
         }
-        m_map[m_start.y][m_start.z].setGridProperty(eProperty::START);
+        m_map[m_start.y][m_start.x].setGridProperty(eProperty::START);
         m_map[m_terminal.y][m_terminal.x].setGridProperty(eProperty::TERMINAL);
     };
 
@@ -43,7 +44,7 @@ namespace nsMap {
             m_start.y = y;
         }
 
-        if(property == eProperty::Terminal) {
+        if(property == eProperty::TERMINAL) {
             m_terminal.x = x;
             m_terminal.y = y;
         }
@@ -51,11 +52,11 @@ namespace nsMap {
         return true;
     };
 
-    struct sCoordination cMap::getStart() {
+    sCoordination cMap::getStart() {
         return m_start;
     };
 
-    struct sCoordination cMap::getTerminal() {
+    sCoordination cMap::getTerminal() {
         return m_terminal;
     };
 
@@ -90,7 +91,7 @@ namespace nsMap {
     };
 
     bool cMap::isEnd() {
-        if (m_map[m_terminal.y][m_terminal.x]->getGridProperty() != EProperty::ARRIVED)
+        if (m_map[m_terminal.y][m_terminal.x].getGridProperty() != eProperty::ARRIVED)
             return false;
         else
             return true;

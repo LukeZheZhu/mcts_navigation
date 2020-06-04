@@ -1,5 +1,10 @@
-set (mcts_include_path "${PROJECT_SOURCE_DIR}/mcts/include")
+list( APPEND include_path
+  ${PROJECT_SOURCE_DIR}/mcts/include
+  ${PROJECT_SOURCE_DIR}/map/include
+  ${PROJECT_SOURCE_DIR}/model)
+
 set (mcts_src_path "${PROJECT_SOURCE_DIR}/mcts/src/mcts.cpp")
 
-include_directories(${mcts_include_path})
+
+include_directories(${include_path})
 add_library(mcts SHARED ${mcts_src_path})
