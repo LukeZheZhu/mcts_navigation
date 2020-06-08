@@ -5,6 +5,6 @@ list( APPEND include_path
 
 include_directories(${include_path})
 
-add_executable(main main.cpp)
+add_executable(main main_behavior.cpp)
 
 target_link_libraries(main mcts map)

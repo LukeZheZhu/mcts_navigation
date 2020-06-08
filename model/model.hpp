@@ -193,6 +193,62 @@ namespace nsModel {
 
 
 
+    class cTmpModelCar {
+    public:
+        struct sModelPose m_pose;
+        float m_speed;
+        float m_radius;
+        std::vector<float> m_turn;
+
+        cTmpModelCar() :
+            m_pose(),
+            m_speed(MODEL_SPEED),
+            m_radius(MODEL_RADIUS),
+            m_turn(5) {
+        };
+
+        cTmpModelCar(float coordX, float coordY, float height = 0.0,
+                     float yaw = 0.0, float roll = 0.0, float pitch = 0.0,
+                     float speed = 1.0, float radius = 1.0,
+                     std::vector<float> turn = {270, 315, 0, 45, 90}) :
+            m_pose(coordX, coordY, height, yaw, roll, pitch),
+            m_speed(speed),
+            m_radius(radius),
+            m_turn(turn) {
+        };
+
+        float getRadius() {
+            return m_radius;
+        }
+
+        struct sModelPose getPose() {
+            return m_pose;
+        };
+
+        struct sModelPose calcMove(int index) {
+            m_pose.rotation.yaw = m_turn[index];
+            m_pose.position.x += m_speed * cos(m_pose.rotation.yaw);
+            m_pose.position.y += m_speed * sin(m_pose.rotation.yaw);
+
+            return m_pose;
+        };
+
+        void showPose() {
+            std::cout << "PoseInfo: "
+                      << ", X: "     << m_pose.position.x
+                      << ", Y: "     << m_pose.position.y
+                      << ", Z: "     << m_pose.position.z
+                      << ", yaw: "   << m_pose.rotation.yaw
+                      << ", roll: "  << m_pose.rotation.roll
+                      << ", pitch: " << m_pose.rotation.pitch
+                      << std::endl;
+        };
+
+
+    }; //class cModelCar
+
+
+
 } // namespace model
 
 #endif //MODEL_HPP

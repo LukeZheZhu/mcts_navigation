@@ -15,17 +15,17 @@ namespace nsMcts {
         cMcts(std::shared_ptr<cNode> node);
 
         std::shared_ptr<cNode> treePolicy(std::shared_ptr<cNode> &node,
-                                          nsModel::cModel &model,
+                                          nsModel::cTmpModelCar &model,
                                           nsMap::cMap &map);
         std::shared_ptr<cNode> nodeExpand(std::shared_ptr<cNode> &node,
-                                          nsModel::cModel &model,
+                                          nsModel::cTmpModelCar &model,
                                           nsMap::cMap &map, int index = 0);
 
 
         std::shared_ptr<cNode> bestChild(std::shared_ptr<cNode> &node);
 
         float defaultPolicy(std::shared_ptr<cNode> &node,
-                            nsModel::cModel &model,
+                            nsModel::cTmpModelCar &model,
                             nsMap::cMap &map);
         void backUp(std::shared_ptr<cNode> &node, float reward);
     }; // class cMcts

@@ -8,11 +8,11 @@
 
 int main() {
     nsMap::cMap map = nsMap::cMap(START_X, START_Y, TERMINAL_X, TERMINAL_Y);
-    nsModel::cModel car = nsModel::cModel(std::make_share
-                                          <nsModel::cModelCar>());
+//    nsModel::cModel car (std::shared_ptr<nsModel::cModelCar>());
+    nsModel::cTmpModelCar car(0.0, 0.0);
 
-    std::shared_ptr<nsMcts::cNode> root = std::make_share<nsMcts::cNode>(map);
-    std::shared_ptr<nsMcts::cMcts> mcts = std::make_share<nsMcts::cMcts>();
+    std::shared_ptr<nsMcts::cNode> root = std::make_shared<nsMcts::cNode>(map);
+    std::shared_ptr<nsMcts::cMcts> mcts = std::make_shared<nsMcts::cMcts>();
     std::shared_ptr<nsMcts::cNode> node(root);
     root->setPose(START_X, START_Y, 0);
 
@@ -25,15 +25,15 @@ int main() {
         std::shared_ptr<nsMcts::cNode> tmpNode(node);
         node = mcts->treePolicy(node, car, map);
         if(tmpNode) {
-            float reward = mcts->defaultPolicy(tmpNode, map);
-    }
+            float reward = mcts->defaultPolicy(tmpNode, car, map);
+        }
 #endif
+    }
 
 
 
 
-
-
+#if 0
     mcts::CMap* map = new mcts::CMap();
     map->setStart(START_X, START_Y);
     map->setTerminal(TERMINAL_X, TERMINAL_Y);
@@ -73,6 +73,8 @@ int main() {
         std::cout << "plan: " << node->m_position.x << ", " << node->m_position.y << std::endl;
         node = node->m_parent;
     }
+#endif
+
 
     return 1;
 }

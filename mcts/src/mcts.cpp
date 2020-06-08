@@ -16,7 +16,7 @@ namespace nsMcts {
     }
 
     std::shared_ptr<cNode> cMcts::nodeExpand(std::shared_ptr<cNode> &node,
-                                             nsModel::cModel &model,
+                                             nsModel::cTmpModelCar &model,
                                              nsMap::cMap &map, int index) {
         float x = 0.0;
         float y = 0.0;
@@ -90,7 +90,7 @@ namespace nsMcts {
 
 
     std::shared_ptr<cNode> cMcts::treePolicy(std::shared_ptr<cNode> &node,
-                                             nsModel::cModel &model,
+                                             nsModel::cTmpModelCar &model,
                                              nsMap::cMap &map) {
 
         float tmpX = node->m_pose.position.x - float(TERMINAL_X);
@@ -122,7 +122,7 @@ namespace nsMcts {
     }
 
     float cMcts::defaultPolicy(std::shared_ptr<cNode> &node,
-                               nsModel::cModel &model,
+                               nsModel::cTmpModelCar &model,
                                nsMap::cMap &map) {
 
         std::shared_ptr<cNode> simNode(new cNode(*node));
