@@ -19,14 +19,14 @@ namespace nsMcts {
                                           nsMap::cMap &map);
         std::shared_ptr<cNode> nodeExpand(std::shared_ptr<cNode> &node,
                                           nsModel::cModel &model,
-                                          int &index = 0);
+                                          nsMap::cMap &map, int index = 0);
 
 
         std::shared_ptr<cNode> bestChild(std::shared_ptr<cNode> &node);
 
         float defaultPolicy(std::shared_ptr<cNode> &node,
                             nsModel::cModel &model,
-                            std::shared_ptr<nsMap::cMap> &map);
+                            nsMap::cMap &map);
         void backUp(std::shared_ptr<cNode> &node, float reward);
     }; // class cMcts
 

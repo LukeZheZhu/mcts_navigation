@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "model.hpp"
+#include "map.hpp"
 
 #define MCTS_BUDGET 1000
 #define ROLLOUT_BUDGET 500
@@ -64,12 +65,12 @@ namespace nsMcts {
             m_childStatus(DIRECTION_NUM, sChildNodeStatus()),
             m_parent(std::make_shared<cNode>()),
             m_child(std::make_shared<cNode>()),
-            m_children()
+            m_children(),
             m_map() {
         };
 
         cNode(const cNode &node) :
-            m_pose(nodde.m_pose),
+            m_pose(node.m_pose),
             m_rewarded(node.m_rewarded),
             m_visited(node.m_visited),
             m_childStatus(node.m_childStatus),
@@ -81,11 +82,10 @@ namespace nsMcts {
         };
 
         cNode(nsMap::cMap &map) :
-            m_position(),
             m_pose(),
             m_rewarded(0.0),
             m_visited(0),
-            m_isVisited(DIRECTION_NUM, false),
+            m_childStatus(DIRECTION_NUM, sChildNodeStatus()),
             m_parent(std::make_shared<cNode>()),
             m_child(std::make_shared<cNode>()),
             m_children(8, std::make_shared<cNode>()),
@@ -111,7 +111,7 @@ namespace nsMcts {
             return false;
         };
 
-        bool addChild(std::share_ptr<cNdoe> child) {
+        bool addChild(std::shared_ptr<cNode> child) {
             if(child) {
                 m_children.push_back(child);
                 return true;
@@ -158,7 +158,7 @@ namespace nsMcts {
         };
 
         bool detectObstacle(int x, int y, nsModel::cModel &model) {
-            int tmpRadius = std::ceil(model.m_radius);
+            int tmpRadius = std::ceil(model.getRadius());
             for(int r = 1; r <= tmpRadius; ++r) {
             }
         };
