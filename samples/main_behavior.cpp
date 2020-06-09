@@ -16,21 +16,31 @@ int main() {
     std::shared_ptr<nsMcts::cNode> node(root);
     root->setPose(START_X, START_Y, 0);
 
+    int count = 0;
 #if 0
     int budget = MCTS_BUDGET;
 
     while(!(node->isTerminal()) && (budget != 0)) {
 #else
     while(!(node->isTerminal())) {
+        std::cout << "Budget: " << count << std::endl;
+        ++count;
         std::shared_ptr<nsMcts::cNode> tmpNode(node);
-        node = mcts->treePolicy(node, car, map);
-        if(tmpNode) {
+        tmpNode = mcts->treePolicy(node, car, map);
+        if(tmpNode && (!(node->isTerminal()))) {
             float reward = mcts->defaultPolicy(tmpNode, car, map);
+            std::cout << "reward: " << reward << std::endl;
+
+            mcts->backUp(tmpNode, reward);
+            //            std::cout << "node.address: " << node << std::endl;
         }
 #endif
     }
-
-
+    std::cout << "arrived" << std::endl;
+//    while(node != NULL) {
+//        std::cout << "plan: " << node->m_pose.position.x << ", " << node->m_pose.position.y << ", " << node->m_pose.rotation.yaw << std::endl;
+//        node = node->m_parent;
+//    }
 
 
 #if 0

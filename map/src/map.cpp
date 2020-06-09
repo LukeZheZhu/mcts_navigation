@@ -69,24 +69,37 @@ namespace nsMap {
     };
 
     bool cMap::isLegal(float x, float y, float radius) {
+        std::cout << "mappppppppppppppppppppppp0 " << std::endl;
         int xMin = std::floor(x - radius);
         int yMin = std::floor(y - radius);
         int xMax = std::ceil(x + radius);
         int yMax = std::ceil(y + radius);
+//        std::cout << "xMin: " << xMin << ", xMax: " << xMax << std::endl;
+//        std::cout << "yMin: " << yMin << ", yMax: " << yMax << std::endl;
+        if((x < 0) || (x >= MAP_WIDTH) ||
+           (y < 0) || (y >= MAP_HEIGHT)) {
+            return false;
+        }
 
+        if((xMax < 0) || (yMax < 0) ||
+           (xMin >= MAP_WIDTH) || (yMin >= MAP_HEIGHT) ){
+              return false;
+        }
 
         for(int j = yMin; j <= yMax; ++j) {
             for(int i = xMin; i <= xMax; ++ i) {
-                if((x < 0) || (x >= MAP_WIDTH) ||
-                   (y < 0) || (y >= MAP_HEIGHT)) {
+//                std::cout << "i： " << i << ", j: " << j << std::endl;
+                if((i < 0) || (j < 0) ||
+                   (i >= MAP_WIDTH) || (j >= MAP_HEIGHT)) {
+                    continue;
+                }
+
+                if(m_map[j][i].m_property == OBSTACLE) {
                     return false;
-                } else {
-                    if(m_map[j][i].m_property != AVAILABLE) {
-                        return false;
-                    }
                 }
             }
         }
+        std::cout << "mapppppppppppppppppppppppppppppppp1" << std::endl;
         return true;
     };
 

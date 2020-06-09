@@ -17,12 +17,76 @@ namespace nsMcts {
 
     std::shared_ptr<cNode> cMcts::nodeExpand(std::shared_ptr<cNode> &node,
                                              nsModel::cTmpModelCar &model,
-                                             nsMap::cMap &map, int index) {
+                                             nsMap::cMap &map,
+                                             int index, bool isSimulation) {
+        if(isSimulation)
+            std::cout << "DefaultPolicyCall, inSimulation" << std::endl;
+        else
+            std::cout << "TreePolicyCall, inTreePolicy" << std::endl;
+
         float x = 0.0;
         float y = 0.0;
         float yaw = 0.0;
 
+        int nodeIndex = index;
+
 #if 1
+#if 1
+
+        while(!(node->isAllExpanded())) {
+#if 0
+            if(!isSimulation) {
+                if(nodeIndex >= node->m_childStatus.size())
+                    break;
+
+                if(node->m_childStatus[nodeIndex].isVisited) {
+                    ++nodeIndex;
+                    continue;
+                }
+            } else {
+                nodeIndex = nodeIndex % DIRECTION_NUM;
+            }
+
+#else
+            if(nodeIndex >= node->m_childStatus.size())
+                break;
+
+            if(node->m_childStatus[nodeIndex].isVisited) {
+                ++nodeIndex;
+                nodeIndex = nodeIndex % DIRECTION_NUM;
+                continue;
+            }
+#endif
+            std::cout << "Yaw is: " << node->m_pose.rotation.yaw << std::endl;
+            struct nsModel::sModelPose tmpMove = model.calcMove(node->m_pose.rotation.yaw,
+                                                                nodeIndex);
+            x = node->m_pose.position.x + tmpMove.position.x;
+            y = node->m_pose.position.y + tmpMove.position.y;
+            std::cout << "nodeIndex: " << nodeIndex << std::endl;
+            std::cout << "x : " << x << ", y: " << y << std::endl;
+
+            //Need to fix
+            yaw = tmpMove.rotation.yaw;
+            node->m_childStatus[nodeIndex].isVisited = true;
+
+            float tmpRadius = model.getRadius();
+            if(map.isLegal(x, y, tmpRadius)) {
+                std::shared_ptr<cNode> subNode = std::make_shared<cNode>();
+                subNode->setPose(x, y, yaw);
+                subNode->setParent(node);
+                node->addChild(subNode);
+                node->m_childStatus[nodeIndex].isCreated = true;
+
+                return subNode;
+            } else {
+                std::cout << "in else?" << std::endl;
+                ++nodeIndex;
+                nodeIndex = nodeIndex % DIRECTION_NUM;
+                continue;
+            }
+
+        }
+#else
         for(int i = index; i < node->m_childStatus.size(); ++i) {
             if(node->m_childStatus[i].isVisited)
                 continue;
@@ -47,7 +111,7 @@ namespace nsMcts {
                 continue;
             }
         }
-
+#endif
 #else
         while(!(node->isAllExpanded())) {
             index = index % DIRECTION_NUM;
@@ -92,7 +156,7 @@ namespace nsMcts {
     std::shared_ptr<cNode> cMcts::treePolicy(std::shared_ptr<cNode> &node,
                                              nsModel::cTmpModelCar &model,
                                              nsMap::cMap &map) {
-
+        std::cout << " In TreePolicy Function" << std::endl;
         float tmpX = node->m_pose.position.x - float(TERMINAL_X);
         float tmpY = node->m_pose.position.y - float(TERMINAL_Y);
         if((std::abs(tmpX) <= 1.0) && (std::abs(tmpY) <= 1.0)) {
@@ -101,15 +165,22 @@ namespace nsMcts {
                            node->m_pose.rotation.yaw);
             final->setParent(node);
             node->addChild(final);
-
+            node = final;
             return final;
         }
 
         while(!(node->isTerminal())) {
             if(node->isAllExpanded()) {
                 node = bestChild(node);
+                std::cout << "BestNode x: " << node->m_pose.position.x << std::endl;
+                std::cout << "BestNode y: " << node->m_pose.position.y << std::endl;
+                std::cout << "BestNode yaw: " << node->m_pose.rotation.yaw << std::endl;
+//                break;
             } else {
                 std::shared_ptr<cNode> tmpNode = nodeExpand(node, model, map);
+                std::cout << "TreePolicy x: " << tmpNode->m_pose.position.x << std::endl;
+                std::cout << "TreePolicy y: " << tmpNode->m_pose.position.y << std::endl;
+                std::cout << "TreePolicy yaw: " << tmpNode->m_pose.rotation.yaw << std::endl;
                 if(tmpNode) {
                     return tmpNode;
                 } else {
@@ -124,7 +195,7 @@ namespace nsMcts {
     float cMcts::defaultPolicy(std::shared_ptr<cNode> &node,
                                nsModel::cTmpModelCar &model,
                                nsMap::cMap &map) {
-
+        std::cout << "In DefaultPolicy function " << std::endl;
         std::shared_ptr<cNode> simNode(new cNode(*node));
         std::shared_ptr<cNode> tmpNode(simNode);
 
@@ -133,9 +204,16 @@ namespace nsMcts {
         std::srand((unsigned)std::time(NULL));
         while(true) {
             ++count;
+            std::cout << "Count is : "<< count << std::endl;
             int tmpIndex = std::rand() % DIRECTION_NUM;
-            tmpNode = nodeExpand(tmpNode, model, map, tmpIndex);
+            tmpNode = nodeExpand(tmpNode, model, map, tmpIndex, true);
+            if((tmpNode == nullptr)) {
+                return 0.0;
+            }
 
+                std::cout << "DefaultPolicy x: " << tmpNode->m_pose.position.x << std::endl;
+                std::cout << "DefaultPolicy y: " << tmpNode->m_pose.position.y << std::endl;
+                std::cout << "DefaultPolicy yaw: " << tmpNode->m_pose.rotation.yaw << std::endl;
             float tmpX = tmpNode->m_pose.position.x - float(TERMINAL_X);
             float tmpY = tmpNode->m_pose.position.y - float(TERMINAL_Y);
             if((std::abs(tmpX) <= 1.0) && (std::abs(tmpY) <= 1.0)) {

@@ -63,8 +63,8 @@ namespace nsMcts {
             m_rewarded(0.0),
             m_visited(0),
             m_childStatus(DIRECTION_NUM, sChildNodeStatus()),
-            m_parent(std::make_shared<cNode>()),
-            m_child(std::make_shared<cNode>()),
+            m_parent(std::shared_ptr<cNode>()),
+            m_child(std::shared_ptr<cNode>()),
             m_children(),
             m_map() {
         };
@@ -92,8 +92,9 @@ namespace nsMcts {
             m_map(map) {
         };
 
-        bool setPose(float x, float y, float z = 0.0,
-                     float yaw = 0.0, float roll = 0.0, float pitch = 0.0) {
+        bool setPose(float x, float y, float yaw,
+                     float z = 0.0,
+                     float roll = 0.0, float pitch = 0.0) {
             m_pose.position.x = x;
             m_pose.position.y = y;
             m_pose.position.z = z;

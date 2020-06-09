@@ -8,6 +8,7 @@
 #define MODEL_HEIGHT 0.0
 #define MODEL_SPEED  1.0
 #define MODEL_RADIUS 1.0
+#define PI 3.14159265
 
 namespace nsModel {
     struct sModelCoordinate {
@@ -155,7 +156,7 @@ namespace nsModel {
         cModelCar(float coordX, float coordY, float height = 0.0,
                   float yaw = 0.0, float roll = 0.0, float pitch = 0.0,
                   float speed =  1.0, float radius = 1.0,
-                  std::vector<float> turn = {270, 315, 0, 45, 90}) :
+                  std::vector<float> turn = {-90, -45, 0, 45, 90}) :
             cModelBase(coordX, coordY, height, yaw, roll, pitch,
                        speed, radius),
             m_turn(turn) {
@@ -210,7 +211,7 @@ namespace nsModel {
         cTmpModelCar(float coordX, float coordY, float height = 0.0,
                      float yaw = 0.0, float roll = 0.0, float pitch = 0.0,
                      float speed = 1.0, float radius = 1.0,
-                     std::vector<float> turn = {270, 315, 0, 45, 90}) :
+                     std::vector<float> turn = {-90, -45, 0, 45, 90}) :
             m_pose(coordX, coordY, height, yaw, roll, pitch),
             m_speed(speed),
             m_radius(radius),
@@ -227,8 +228,30 @@ namespace nsModel {
 
         struct sModelPose calcMove(int index) {
             m_pose.rotation.yaw = m_turn[index];
-            m_pose.position.x += m_speed * cos(m_pose.rotation.yaw);
-            m_pose.position.y += m_speed * sin(m_pose.rotation.yaw);
+            std::cout << "model: yaw: " <<index << ", " <<  m_turn[index] << ", " << m_pose.rotation.yaw << std::endl;
+            m_pose.position.y = -m_speed * cos(m_pose.rotation.yaw * PI /180.0);
+            std::cout << "model:cos : " << -cos(m_pose.rotation.yaw * PI / 180.0) << std::endl;
+            m_pose.position.x = m_speed * sin(m_pose.rotation.yaw * PI /180.0);
+            std::cout << "model:sin : " << sin(m_pose.rotation.yaw * PI / 180.0) << std::endl;
+
+            return m_pose;
+        };
+
+        struct sModelPose calcMove(float yaw, int index) {
+            float tmpYaw = yaw + m_turn[index];
+            if(tmpYaw < 0)
+                tmpYaw += 360;
+            tmpYaw = float ((int)(tmpYaw) % 360);
+            m_pose.rotation.yaw = tmpYaw;
+            std::cout << "model: yaw: " <<index << ", " <<  m_turn[index] << ", " << m_pose.rotation.yaw << std::endl;
+            m_pose.position.y = -m_speed * cos(m_pose.rotation.yaw * PI /180.0);
+            if(std::abs(m_pose.position.y) < 0.00001)
+                m_pose.position.y = 0.0;
+            std::cout << "model:cos : " << -cos(m_pose.rotation.yaw * PI / 180.0) << std::endl;
+            m_pose.position.x = m_speed * sin(m_pose.rotation.yaw * PI /180.0);
+            if(std::abs(m_pose.position.x) < 0.00001)
+                m_pose.position.x = 0.0;
+            std::cout << "model:sin : " << sin(m_pose.rotation.yaw * PI / 180.0) << std::endl;
 
             return m_pose;
         };

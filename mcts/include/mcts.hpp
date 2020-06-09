@@ -19,7 +19,8 @@ namespace nsMcts {
                                           nsMap::cMap &map);
         std::shared_ptr<cNode> nodeExpand(std::shared_ptr<cNode> &node,
                                           nsModel::cTmpModelCar &model,
-                                          nsMap::cMap &map, int index = 0);
+                                          nsMap::cMap &map, int index = 0,
+                                          bool isSimulation = false);
 
 
         std::shared_ptr<cNode> bestChild(std::shared_ptr<cNode> &node);
