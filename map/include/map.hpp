@@ -4,13 +4,13 @@
 #include <iostream>
 #include <vector>
 
-#define MAP_HEIGHT 5
-#define MAP_WIDTH  5
+#define MAP_HEIGHT 7
+#define MAP_WIDTH  7
 
 #define START_X 1.0
 #define START_Y 1.0
-#define TERMINAL_X 3.0
-#define TERMINAL_Y 3.0
+#define TERMINAL_X 5.0
+#define TERMINAL_Y 5.0
 
 namespace nsMap {
     struct sCoordination {

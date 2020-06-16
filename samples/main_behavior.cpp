@@ -8,6 +8,7 @@
 
 int main() {
     nsMap::cMap map = nsMap::cMap(START_X, START_Y, TERMINAL_X, TERMINAL_Y);
+    map.setMapGrid(3,3,nsMap::eProperty::OBSTACLE);
 //    nsModel::cModel car (std::shared_ptr<nsModel::cModelCar>());
     nsModel::cTmpModelCar car(0.0, 0.0);
 
@@ -37,6 +38,11 @@ int main() {
 #endif
     }
     std::cout << "arrived" << std::endl;
+    std::shared_ptr<nsMcts::cNode> tmpNode(root);
+    while(tmpNode) {
+        std::cout << "Plan: " << tmpNode->m_pose.position.x << ", " << tmpNode->m_pose.position.y << ", " << tmpNode->m_pose.rotation.yaw << std::endl;
+        tmpNode = tmpNode->m_child;
+    }
 //    while(node != NULL) {
 //        std::cout << "plan: " << node->m_pose.position.x << ", " << node->m_pose.position.y << ", " << node->m_pose.rotation.yaw << std::endl;
 //        node = node->m_parent;

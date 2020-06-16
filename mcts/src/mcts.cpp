@@ -34,20 +34,6 @@ namespace nsMcts {
 #if 1
 
         while(!(node->isAllExpanded())) {
-#if 0
-            if(!isSimulation) {
-                if(nodeIndex >= node->m_childStatus.size())
-                    break;
-
-                if(node->m_childStatus[nodeIndex].isVisited) {
-                    ++nodeIndex;
-                    continue;
-                }
-            } else {
-                nodeIndex = nodeIndex % DIRECTION_NUM;
-            }
-
-#else
             if(nodeIndex >= node->m_childStatus.size())
                 break;
 
@@ -56,7 +42,7 @@ namespace nsMcts {
                 nodeIndex = nodeIndex % DIRECTION_NUM;
                 continue;
             }
-#endif
+
             std::cout << "Yaw is: " << node->m_pose.rotation.yaw << std::endl;
             struct nsModel::sModelPose tmpMove = model.calcMove(node->m_pose.rotation.yaw,
                                                                 nodeIndex);
@@ -81,7 +67,9 @@ namespace nsMcts {
             } else {
                 std::cout << "in else?" << std::endl;
                 ++nodeIndex;
+                std::cout << "nodeIndex1: " << nodeIndex << std::endl;
                 nodeIndex = nodeIndex % DIRECTION_NUM;
+                std::cout << "nodeIndex2: " << nodeIndex << std::endl;
                 continue;
             }
 
@@ -178,12 +166,14 @@ namespace nsMcts {
 //                break;
             } else {
                 std::shared_ptr<cNode> tmpNode = nodeExpand(node, model, map);
+
+                if(tmpNode) {
                 std::cout << "TreePolicy x: " << tmpNode->m_pose.position.x << std::endl;
                 std::cout << "TreePolicy y: " << tmpNode->m_pose.position.y << std::endl;
                 std::cout << "TreePolicy yaw: " << tmpNode->m_pose.rotation.yaw << std::endl;
-                if(tmpNode) {
                     return tmpNode;
                 } else {
+                    std::cout << "in herererererer? " << std::endl;
                     return nullptr;
                 }
             }
