@@ -228,11 +228,8 @@ namespace nsModel {
 
         struct sModelPose calcMove(int index) {
             m_pose.rotation.yaw = m_turn[index];
-            std::cout << "model: yaw: " <<index << ", " <<  m_turn[index] << ", " << m_pose.rotation.yaw << std::endl;
             m_pose.position.y = -m_speed * cos(m_pose.rotation.yaw * PI /180.0);
-            std::cout << "model:cos : " << -cos(m_pose.rotation.yaw * PI / 180.0) << std::endl;
             m_pose.position.x = m_speed * sin(m_pose.rotation.yaw * PI /180.0);
-            std::cout << "model:sin : " << sin(m_pose.rotation.yaw * PI / 180.0) << std::endl;
 
             return m_pose;
         };
@@ -247,11 +244,9 @@ namespace nsModel {
             m_pose.position.y = -m_speed * cos(m_pose.rotation.yaw * PI /180.0);
             if(std::abs(m_pose.position.y) < 0.00001)
                 m_pose.position.y = 0.0;
-            std::cout << "model:cos : " << -cos(m_pose.rotation.yaw * PI / 180.0) << std::endl;
             m_pose.position.x = m_speed * sin(m_pose.rotation.yaw * PI /180.0);
             if(std::abs(m_pose.position.x) < 0.00001)
                 m_pose.position.x = 0.0;
-            std::cout << "model:sin : " << sin(m_pose.rotation.yaw * PI / 180.0) << std::endl;
 
             return m_pose;
         };

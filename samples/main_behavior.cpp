@@ -8,7 +8,7 @@
 
 int main() {
     nsMap::cMap map = nsMap::cMap(START_X, START_Y, TERMINAL_X, TERMINAL_Y);
-    map.setMapGrid(3,3,nsMap::eProperty::OBSTACLE);
+    //    map.setMapGrid(2, 1, nsMap::eProperty::OBSTACLE);
 //    nsModel::cModel car (std::shared_ptr<nsModel::cModelCar>());
     nsModel::cTmpModelCar car(0.0, 0.0);
 

@@ -30,9 +30,6 @@ namespace nsMcts {
 
         int nodeIndex = index;
 
-#if 1
-#if 1
-
         while(!(node->isAllExpanded())) {
             if(nodeIndex >= node->m_childStatus.size())
                 break;
@@ -65,76 +62,13 @@ namespace nsMcts {
 
                 return subNode;
             } else {
-                std::cout << "in else?" << std::endl;
                 ++nodeIndex;
-                std::cout << "nodeIndex1: " << nodeIndex << std::endl;
                 nodeIndex = nodeIndex % DIRECTION_NUM;
-                std::cout << "nodeIndex2: " << nodeIndex << std::endl;
                 continue;
             }
 
         }
-#else
-        for(int i = index; i < node->m_childStatus.size(); ++i) {
-            if(node->m_childStatus[i].isVisited)
-                continue;
 
-            struct nsModel::sModelPose tmpMove = model.calcMove(index);
-            x = node->m_pose.position.x + tmpMove.position.x;
-            y = node->m_pose.position.y + tmpMove.position.y;
-            //Need to fix
-            yaw = double((int)(node->m_pose.rotation.yaw + tmpMove.rotation.yaw) % 360);
-            node->m_childStatus[i].isVisited = true;
-
-            float tmpRadius = model.getRadius();
-            if(map.isLegal(x, y, tmpRadius)) {
-                std::shared_ptr<cNode> subNode = std::make_shared<cNode>();
-                subNode->setPose(x, y, yaw);
-                subNode->setParent(node);
-                node->addChild(subNode);
-                node->m_childStatus[i].isCreated = true;
-
-                return subNode;
-            } else {
-                continue;
-            }
-        }
-#endif
-#else
-        while(!(node->isAllExpanded())) {
-            index = index % DIRECTION_NUM;
-            struct nsModel::modelPose tmpMove = model.calcMove(index);
-            x = node->pose.position.x + tmpMove.position.x;
-            y = node->pose.position.y + tmpMove.position.y;
-            yaw = node->pose.rotation.yaw + tmpMove.rotation.yaw;
-            node->m_isVisited[index] = true;
-
-            //        std::cout << "xx: " << x << ", yy: " << y << std::endl;
-
-            if(node->m_parent) {
-                if((node->m_parent->m_pose.position.x == x) &&
-                   (node->m_parent->m_pose.position.y == y)) {
-                    ++index;
-                    continue;
-                }
-            } //This part should not be triggered, as model only have five direction and no backward
-
-            float tmpRadius = model.getRadius();
-            if(map->isLegal(x, y, tmpRadius)) {
-                std::shared_ptr<cNode> subNode = std::make_shared<cNode>();
-                subNode->setPose(x, y, yaw);
-                subNode->setParent(node);
-                node->addChild(subNode);
-                subNode->isCreated = false;
-
-                return subNode;
-
-            } else {
-                ++index;
-                continue;
-            }
-        }
-#endif
         return nullptr;
 
     }
@@ -168,12 +102,11 @@ namespace nsMcts {
                 std::shared_ptr<cNode> tmpNode = nodeExpand(node, model, map);
 
                 if(tmpNode) {
-                std::cout << "TreePolicy x: " << tmpNode->m_pose.position.x << std::endl;
-                std::cout << "TreePolicy y: " << tmpNode->m_pose.position.y << std::endl;
-                std::cout << "TreePolicy yaw: " << tmpNode->m_pose.rotation.yaw << std::endl;
+                    std::cout << "TreePolicy x: " << tmpNode->m_pose.position.x << std::endl;
+                    std::cout << "TreePolicy y: " << tmpNode->m_pose.position.y << std::endl;
+                    std::cout << "TreePolicy yaw: " << tmpNode->m_pose.rotation.yaw << std::endl;
                     return tmpNode;
                 } else {
-                    std::cout << "in herererererer? " << std::endl;
                     return nullptr;
                 }
             }
@@ -247,6 +180,10 @@ namespace nsMcts {
                 tmpNode = node->m_children[i];
                 node->m_child = node->m_children[i];
             }
+        }
+        if(!tmpNode) {
+            tmpNode = node->m_children[0];
+            node->m_child = node->m_children[0];
         }
         return tmpNode;
 
