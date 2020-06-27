@@ -24,6 +24,14 @@ namespace nsDisplay {
 
     class cDisplay {
     public:
-        struct sPoint
-    } // class cDisplay
+        struct sPoint m_point;
+        cv::Mat m_mat;
+
+        cDisplay();
+
+        void drawCMLine(cv::Mat &mat);
+        void drawMMLine(cv::Mat &mat);
+
+        void drawGrid(cv::Mat &mat, float x, float y, int r, int g, int b);
+    }; // class cDisplay
 } //namesapce nsDisplay

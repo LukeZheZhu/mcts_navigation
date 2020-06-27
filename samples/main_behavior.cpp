@@ -1,14 +1,24 @@
 #include <iostream>
+#include <thread>
 
 #include <mcts_defs.hpp>
 #include <mcts.hpp>
 
 #include <model.hpp>
 #include <map.hpp>
+#include "display.hpp"
+
 
 int main() {
     nsMap::cMap map = nsMap::cMap(START_X, START_Y, TERMINAL_X, TERMINAL_Y);
-    //    map.setMapGrid(2, 1, nsMap::eProperty::OBSTACLE);
+//    map.setMapGrid(2, 1, nsMap::eProperty::OBSTACLE);
+
+    nsDisplay::cDisplay display = nsDisplay::cDisplay();
+    display.drawGrid(display.m_mat, START_X, START_Y, 100, 0, 0);
+    display.drawGrid(display.m_mat, TERMINAL_X, TERMINAL_Y, 0, 0, 100);
+    cv::namedWindow("MCTS", cv::WINDOW_AUTOSIZE);
+    cv::imshow("MCTS", display.m_mat);
+    cv::waitKey(1);
 //    nsModel::cModel car (std::shared_ptr<nsModel::cModelCar>());
     nsModel::cTmpModelCar car(0.0, 0.0);
 
@@ -18,6 +28,8 @@ int main() {
     root->setPose(START_X, START_Y, 0);
 
     int count = 0;
+
+
 #if 0
     int budget = MCTS_BUDGET;
 
@@ -40,14 +52,13 @@ int main() {
     std::cout << "arrived" << std::endl;
     std::shared_ptr<nsMcts::cNode> tmpNode(root);
     while(tmpNode) {
-        std::cout << "Plan: " << tmpNode->m_pose.position.x << ", " << tmpNode->m_pose.position.y << ", " << tmpNode->m_pose.rotation.yaw << std::endl;
+        std::cout << "Plan: " <<
+            tmpNode->m_pose.position.x << ", " <<
+            tmpNode->m_pose.position.y << ", " <<
+            tmpNode->m_pose.rotation.yaw << std::endl;
         tmpNode = tmpNode->m_child;
     }
-//    while(node != NULL) {
-//        std::cout << "plan: " << node->m_pose.position.x << ", " << node->m_pose.position.y << ", " << node->m_pose.rotation.yaw << std::endl;
-//        node = node->m_parent;
-//    }
-
+    cv::waitKey(0);
 
 #if 0
     mcts::CMap* map = new mcts::CMap();

@@ -1,10 +1,13 @@
+find_package(Threads REQUIRED)
+
 list( APPEND include_path
-  ${PROJECT_SOURCE_DIR}/mcts/include
+  ${PROJECT_SOURCE_DIR}/display/include
   ${PROJECT_SOURCE_DIR}/map/include
+  ${PROJECT_SOURCE_DIR}/mcts/include
   ${PROJECT_SOURCE_DIR}/model)
 
 include_directories(${include_path})
 
 add_executable(main main_behavior.cpp)
 
-target_link_libraries(main mcts map)
+target_link_libraries(main mcts map display ${CMAKE_THREAD_LIBS_INIT})
