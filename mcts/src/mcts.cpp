@@ -1,9 +1,3 @@
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <cmath>
-#include <random>
-
 #include "mcts.hpp"
 
 namespace nsMcts {
@@ -77,7 +71,8 @@ namespace nsMcts {
 
     std::shared_ptr<cNode> cMcts::treePolicy(std::shared_ptr<cNode> &node,
                                              nsModel::cTmpModelCar &model,
-                                             nsMap::cMap &map) {
+                                             nsMap::cMap &map,
+                                             nsDisplay::cDisplay &display) {
         std::cout << " In TreePolicy Function" << std::endl;
         float tmpX = node->m_pose.position.x - float(TERMINAL_X);
         float tmpY = node->m_pose.position.y - float(TERMINAL_Y);
@@ -93,10 +88,23 @@ namespace nsMcts {
 
         while(!(node->isTerminal())) {
             if(node->isAllExpanded()) {
+                float px = node->m_pose.position.x;
+                float py = node->m_pose.position.y;
+
                 node = bestChild(node);
                 std::cout << "BestNode x: " << node->m_pose.position.x << std::endl;
                 std::cout << "BestNode y: " << node->m_pose.position.y << std::endl;
                 std::cout << "BestNode yaw: " << node->m_pose.rotation.yaw << std::endl;
+
+                float nx = node->m_pose.position.x;
+                float ny = node->m_pose.position.y;
+                display.drawGrid(display.m_mat,
+                                 nx, ny,
+                                 0, 100, 0);
+                display.drawArrow(display.m_mat, px, py, nx, ny,
+                                  0, 0, 0);
+                cv::imshow("MCTS", display.m_mat);
+                cv::waitKey(400);
 //                break;
             } else {
                 std::shared_ptr<cNode> tmpNode = nodeExpand(node, model, map);

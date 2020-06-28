@@ -45,9 +45,23 @@ namespace nsDisplay {
                             int r, int g, int b) {
         int xPoint = (int)(x * 100.0);
         int yPoint = (int)(y * 100.0);
-        std::cout << "x: " << xPoint << ", y: " << yPoint << std::endl;
+
         cv::Point start = cv::Point(xPoint, yPoint);
         cv::Point end = cv::Point(xPoint + 10, yPoint + 10);
         cv::rectangle(mat, start, end, cv::Scalar(r, g, b), cv::FILLED);
+    }
+
+    void cDisplay::drawArrow(cv::Mat &mat,
+                             float px, float py, float nx, float ny,
+                             int r, int g, int b) {
+        int prevX = (int)(px * 100.0 + 5.0);
+        int prevY = (int)(py * 100.0 + 5.0);
+
+        int nextX = (int)(nx * 100.0 + 5.0);
+        int nextY = (int)(ny * 100.0 + 5.0);
+
+        cv::Point start = cv::Point(prevX, prevY);
+        cv::Point end = cv::Point(nextX, nextY);
+        cv::arrowedLine(mat, start, end, cv::Scalar(r, g, b));
     }
 } //namespace nsDisplay

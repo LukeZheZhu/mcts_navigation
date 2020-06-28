@@ -2,8 +2,13 @@
 #define MCTS_HPP
 
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
+#include <random>
 
 #include "mcts_defs.hpp"
+#include "display.hpp"
 
 namespace nsMcts {
     class cMcts {
@@ -16,7 +21,8 @@ namespace nsMcts {
 
         std::shared_ptr<cNode> treePolicy(std::shared_ptr<cNode> &node,
                                           nsModel::cTmpModelCar &model,
-                                          nsMap::cMap &map);
+                                          nsMap::cMap &map,
+                                          nsDisplay::cDisplay &display);
         std::shared_ptr<cNode> nodeExpand(std::shared_ptr<cNode> &node,
                                           nsModel::cTmpModelCar &model,
                                           nsMap::cMap &map, int index = 0,

@@ -39,7 +39,7 @@ int main() {
         std::cout << "Budget: " << count << std::endl;
         ++count;
         std::shared_ptr<nsMcts::cNode> tmpNode(node);
-        tmpNode = mcts->treePolicy(node, car, map);
+        tmpNode = mcts->treePolicy(node, car, map, display);
         if(tmpNode && (!(node->isTerminal()))) {
             float reward = mcts->defaultPolicy(tmpNode, car, map);
             std::cout << "reward: " << reward << std::endl;
@@ -56,6 +56,17 @@ int main() {
             tmpNode->m_pose.position.x << ", " <<
             tmpNode->m_pose.position.y << ", " <<
             tmpNode->m_pose.rotation.yaw << std::endl;
+
+        if(!(tmpNode->m_child)) {
+            display.drawArrow(display.m_mat,
+                              tmpNode->m_pose.position.x,
+                              tmpNode->m_pose.position.y,
+                              TERMINAL_X,
+                              TERMINAL_Y,
+                              0, 0, 0);
+            cv::imshow("MCTS", display.m_mat);
+            cv::waitKey(1);
+        }
         tmpNode = tmpNode->m_child;
     }
     cv::waitKey(0);

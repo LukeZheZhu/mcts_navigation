@@ -1,3 +1,6 @@
+#ifndef DISPLAY_HPP
+#define DISPLAY_HPP
+
 #include <iostream>
 
 #include <opencv2/core.hpp>
@@ -33,5 +36,9 @@ namespace nsDisplay {
         void drawMMLine(cv::Mat &mat);
 
         void drawGrid(cv::Mat &mat, float x, float y, int r, int g, int b);
+        void drawArrow(cv::Mat &mat, float px, float py, float nx, float ny,
+                       int r, int g, int b);
     }; // class cDisplay
 } //namesapce nsDisplay
+
+#endif //DISPLAY_HPP
